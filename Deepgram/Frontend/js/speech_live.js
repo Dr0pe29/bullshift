@@ -1,6 +1,5 @@
 const liveText = document.getElementById("liveText");
 const interimText = document.getElementById("interimText");
-const charCounter = document.getElementById("charCounter");
 const factsPanel = document.getElementById("factsPanel");
 const analysisBrandName = document.querySelector(".analysis-brand-name");
 
@@ -79,7 +78,6 @@ function stopLiveSpeech() {
 function showInterimText(text) {
   if (!interimText) return;
   interimText.textContent = text;
-  updateCounter();
 }
 
 function addFinalText(text) {
@@ -88,16 +86,6 @@ function addFinalText(text) {
   finalTranscript += text + " ";
   liveText.textContent = finalTranscript;
   interimText.textContent = "";
-  updateCounter();
-}
-
-function updateCounter() {
-  if (!liveText || !charCounter) return;
-
-  const finalLength = liveText.textContent.trim().length;
-  const interimLength = interimText ? interimText.textContent.trim().length : 0;
-
-  charCounter.textContent = `${finalLength + interimLength}/1000 CHARACTERS`;
 }
 
 // AINDA EM TESTE
@@ -132,8 +120,6 @@ function clearLiveSpeech() {
   if (factsPanel) {
     factsPanel.innerHTML = "";
   }
-
-  updateCounter();
 }
 
 // Isto permite que o button_moving.js consiga chamar startLiveSpeech()

@@ -331,15 +331,6 @@ body {
   font-style: italic;
 }
 
-.char-counter {
-  position: absolute;
-  right: 16px;
-  bottom: 10px;
-  font-size: 11px;
-  font-weight: 900;
-  color: #111;
-}
-
 .facts-panel {
   display: flex;
   flex-direction: column;
