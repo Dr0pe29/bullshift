@@ -538,3 +538,81 @@
 .modal-section ul {
   padding-left: 20px;
 }
+
+/* TRANSCRIPT CARD */
+
+.transcript-card {
+  padding: 30px 34px;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+}
+
+.transcript-card h2 {
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+
+.transcript-result-text {
+  position: relative;
+  z-index: 1;
+
+  flex: 1;
+  min-height: 0;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding-right: 10px;
+
+  font-size: 18px;
+  line-height: 1.5;
+  color: rgba(235, 245, 255, 0.84);
+
+  word-break: break-word;
+}
+
+.transcript-result-text::-webkit-scrollbar {
+  width: 7px;
+}
+
+.transcript-result-text::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+}
+
+.transcript-result-text::-webkit-scrollbar-thumb {
+  background: rgba(76, 163, 255, 0.45);
+  border-radius: 999px;
+}
+
+/* HIGHLIGHTS IN TRANSCRIPT */
+
+.transcript-highlight {
+  padding: 1px 3px;
+  border-radius: 4px;
+
+  font-weight: 800;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+}
+
+.transcript-highlight.true {
+  text-decoration-line: underline;
+  text-decoration-color: #55d26a;
+  background: rgba(85, 210, 106, 0.12);
+}
+
+.transcript-highlight.false {
+  text-decoration-line: underline;
+  text-decoration-color: #ff4b45;
+  background: rgba(255, 75, 69, 0.12);
+}
+
+.transcript-highlight.inconclusive {
+  text-decoration-line: underline;
+  text-decoration-color: #ffd84d;
+  background: rgba(255, 216, 77, 0.12);
+}

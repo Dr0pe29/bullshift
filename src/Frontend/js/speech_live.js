@@ -95,6 +95,8 @@ function addFinalText(text) {
   finalTranscript += text + " ";
   liveText.textContent = finalTranscript;
   interimText.textContent = "";
+
+  localStorage.setItem("bullshiftFinalTranscript", finalTranscript.trim());
 }
 
 function escapeHtml(value) {
@@ -172,6 +174,7 @@ function clearLiveSpeech() {
   if (window.updateTruthMeter && analysisTruthMeter) {
     window.updateTruthMeter(analysisTruthMeter, 0);
   }
+  localStorage.removeItem("bullshiftFinalTranscript");
 }
 
 // ===============================

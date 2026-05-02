@@ -65,52 +65,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-/**
- setTimeout(() => {
-   const mockData = [
-     {
-       type: "results",
-        text: "Portugal won the UEFA Euro 2016 tournament.",
-        confidence: 92,
-        explanation:
-          "Portugal won UEFA Euro 2016 after defeating France in the final.",
-        sources: ["Source 1...", "Source 2..."]
-      },
-      {
-        type: "results",
-        text: "The Earth orbits around the Sun.",
-        confidence: 99,
-        explanation:
-          "This is a well-established astronomical fact.",
-          sources: ["Source 1..."]
-      },
-      {
-        type: "results",
-        text: "Portugal has more than 20 million inhabitants.",
-        confidence: 18,
-        explanation:
-          "Portugal does not have more than 20 million inhabitants. Its population is around 10 million, so this claim is considered false. But it has a rich cultural heritage, and the people like tomatos",
-        sources: ["Source 1..."]
-      },
-      {
-        type: "results",
-        text: "Cristiano Ronaldo is the Best footballer.",
-        confidence: 61,
-        explanation:
-          "A lot of people consider Cristiano Ronaldo to be the best footballer of all time.",
-          sources: ["Source 1...", "Source 2..."]
-      },
-      {
-        type: "resume",
-        text:
-        "Overall, the transcript is mostly reliable, with high-confidence factual claims and some subjective statements ignored."
-      }
-    ];
-
-    showResults(mockData);
-  }, 2500);
-}
-*/
 // ===============================
 // NORMALIZE BACKEND DATA
 // ===============================
@@ -229,6 +183,7 @@ function showResults(rawData) {
   confidenceScoreElement.textContent = stats.confidenceScore;
 
   renderFacts(facts);
+  renderTranscript(facts);
   updateGauge(stats);
   updateKeyTakeaway(data.resume);
 
@@ -310,13 +265,71 @@ function renderFacts(facts) {
 }
 
 // ===============================
+// RENDER TRANSCRIPT WITH HIGHLIGHTED FACTS
+// ===============================
+function renderTranscript(facts) {
+  const transcriptElement = document.getElementById("transcriptResultText");
+  if (!transcriptElement) return;
+
+  const transcript = localStorage.getItem("bullshiftFinalTranscript") || "";
+
+  if (transcript.trim() === "") {
+    transcriptElement.textContent = "No transcript available.";
+    return;
+  }
+
+  transcriptElement.innerHTML = highlightFactsInTranscript(transcript, facts);
+}
+
+function highlightFactsInTranscript(transcript, facts) {
+  /*
+    Primeiro escapamos o transcript todo por segurança.
+    Depois tentamos encontrar os factos dentro do texto e envolver com span.
+  */
+
+  let highlightedTranscript = escapeHtml(transcript);
+
+  const sortedFacts = [...facts].sort((a, b) => {
+    const aLength = String(a.text || "").length;
+    const bLength = String(b.text || "").length;
+    return bLength - aLength;
+  });
+
+  sortedFacts.forEach((fact) => {
+    if (!fact.text) return;
+
+    const factText = escapeHtml(fact.text.trim());
+    if (factText === "") return;
+
+    const confidence =
+      typeof fact.confidence === "number" ? Math.round(fact.confidence) : null;
+
+    const label = getLabelFromConfidence(confidence);
+
+    const escapedRegexText = escapeRegExp(factText);
+
+    const regex = new RegExp(escapedRegexText, "gi");
+
+    highlightedTranscript = highlightedTranscript.replace(regex, (match) => {
+      return `<span class="transcript-highlight ${label}">${match}</span>`;
+    });
+  });
+
+  return highlightedTranscript;
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// ===============================
 // KEY TAKEAWAY / RESUME FROM BACKEND
 // ===============================
 function updateKeyTakeaway(resumeText) {
   if (!keyTakeawayElement) return;
 
   if (typeof resumeText === "string" && resumeText.trim() !== "") {
-    keyTakeawayElement.textContent = resumeText;
+    keyTakeawayElement.textContent = cleanMarkdownText(resumeText);;
     return;
   }
 
@@ -367,6 +380,32 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+// ===============================
+// CLEAN MARKDOWN TEXT
+// ===============================
+function cleanMarkdownText(value) {
+  return String(value ?? "")
+    // remove bold/italic markers
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/__(.*?)__/g, "$1")
+    .replace(/_(.*?)_/g, "$1")
+
+    // remove headings: # Title
+    .replace(/^#{1,6}\s+/gm, "")
+
+    // remove bullet markers: - text, * text
+    .replace(/^\s*[-*]\s+/gm, "")
+
+    // remove inline code: `text`
+    .replace(/`([^`]+)`/g, "$1")
+
+    // remove links: [text](url) -> text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+
+    .trim();
 }
 
 // ===============================
@@ -448,4 +487,3 @@ document.addEventListener("keydown", (event) => {
     closeFactModal();
   }
 });
-
