@@ -406,8 +406,38 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+
   gap: 50px;
   width: 100%;
+
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding-top: 34px;
+  padding-right: 12px;
+  padding-bottom: 40px;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(76, 163, 255, 0.55) rgba(255, 255, 255, 0.08);
+}
+
+.facts-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.facts-panel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+}
+
+.facts-panel::-webkit-scrollbar-thumb {
+  background: rgba(76, 163, 255, 0.55);
+  border-radius: 999px;
+}
+
+.facts-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(76, 163, 255, 0.85);
 }
 
 .fact-card {

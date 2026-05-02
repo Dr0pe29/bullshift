@@ -142,7 +142,7 @@ function addFact(data) {
     <p class="fact-text">${escapeHtml(data.text)}</p>
   `;
 
-  factsPanel.appendChild(factCard);
+  factsPanel.prepend(factCard);
 }
 
 function clearLiveSpeech() {
