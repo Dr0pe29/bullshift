@@ -3,53 +3,112 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Bullshift</title>
+
   <link rel="stylesheet" href="../css/home.css" />
 </head>
 <body>
 
-  <header class="navbar">
-    <div class="logo-area">
-      <img src="../img/logo.png" alt="Bullshift icon" class="logo" />
-      <span class="brand-name">Bullshift</span>
-    </div>
-  </header>
+  <!-- HOME PAGE -->
+  <section class="screen home-screen" id="homeScreen">
 
-  <main class="hero">
+    <header class="navbar">
+      <div class="logo-area">
+        <img src="../img/logo.png" alt="Bullshift icon" class="logo" />
+        <span class="brand-name">Bullshift</span>
+      </div>
+    </header>
 
-    <img
-      src="../img/Ventura.png"
-      alt="Cartoon character on the left"
-      class="side-character side-character-left"
-    />
-    <section class="hero-left">
-    <h1>
-      Spot the truth <br />
-      <span class="blue-text">in a world full of</span><br />
-      <span class="bullshift-glitch">Bullshift</span>
-    </h1>
+    <main class="hero">
 
-    <p>
-      Bullshift analyzes, filters, and separates truth <br />
-      from misinformation.
-    </p>
+      <img
+        src="../img/Ventura.png"
+        alt="Cartoon character on the left"
+        class="side-character side-character-left"
+      />
+
+      <section class="hero-left">
+        <h1>
+          Spot the truth <br />
+          <span class="blue-text">in a world full of</span><br />
+          <span class="bullshift-glitch">Bullshift</span>
+        </h1>
+
+        <p>
+          Bullshift analyzes, filters, and separates truth <br />
+          from misinformation.
+        </p>
+      </section>
+
+      <section class="hero-right">
+        <button class="record-button" id="startButton">
+          <img src="../img/logo.png" alt="Start recording" />
+        </button>
+
+        <p class="record-text">Click here to start recording</p>
+
+        <img
+          src="../img/Trump.png"
+          alt="Cartoon character on the right"
+          class="side-character side-character-right"
+        />
+      </section>
+
+    </main>
   </section>
 
-  <section class="hero-right">
-    <button class="record-button">
-      <img src="../img/logo.png" alt="Start recording" />
-    </button>
 
-    <p class="record-text">Click here to start recording</p>
+  <!-- ANALYSIS PAGE -->
+  <section class="screen analysis-screen" id="analysisScreen">
 
-    <img
-      src="../img/Trump.png"
-      alt="Cartoon character on the right"
-      class="side-character side-character-right"
-   />
+    <header class="analysis-header">
+      <div class="analysis-brand">
+        <div class="logo-placeholder"></div>
+        <span class="analysis-brand-name">Recording...</span>
+      </div>
+    </header>
+
+    <main class="analysis-content">
+
+      <section class="transcript-panel">
+        <div class="live-text-box">
+          <p id="liveText">
+            Os carros elétricos já existem desde o século XIX. Hoje, eles não emitem gases pelo tubo de escape, porque não usam motor de combustão interna. No entanto, todos os carros elétricos conseguem fazer mais de 900 km com uma única carga. Além disso, as suas baterias usam materiais como lítio e níquel.
+          </p>
+
+          <span id="charCounter" class="char-counter">0/1000 CHARACTERS</span>
+        </div>
+      </section>
+
+      <section class="facts-panel" id="factsPanel">
+
+        <article class="fact-card true">
+          <div class="percentage">98%</div>
+          <p>Os carros elétricos já existem desde o século XIX.</p>
+        </article>
+
+        <article class="fact-card true">
+          <div class="percentage">90%</div>
+          <p>Os carros elétricos não emitem gases pelo tubo de escape.</p>
+        </article>
+
+        <article class="fact-card false">
+          <div class="percentage">13%</div>
+          <p>Todos os carros elétricos conseguem fazer mais de 900 km com uma única carga.</p>
+        </article>
+
+        <article class="fact-card true">
+          <div class="percentage">99%</div>
+          <p>As baterias dos carros elétricos usam materiais como lítio e níquel.</p>
+        </article>
+
+      </section>
+
+    </main>
   </section>
 
-  </main>
+  <script src="../js/button_moving.js"></script>
 
 </body>
 </html>
