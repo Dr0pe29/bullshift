@@ -74,7 +74,6 @@ function startLiveSpeech() {
 
   speechSocket.onclose = () => {
     console.log("Speech socket closed");
-    //window.location.href = "result.html";
   };
 }
 

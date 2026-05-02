@@ -1,0 +1,101 @@
+@media (max-width: 1050px) {
+  body {
+    overflow-y: auto;
+  }
+
+  .results-screen {
+    height: auto;
+    padding: 28px 24px 50px;
+  }
+
+  .back-button {
+    top: 28px;
+    left: 24px;
+  }
+
+  .results-title {
+    font-size: 46px;
+    margin-top: 92px;
+    margin-bottom: 32px;
+  }
+
+  .results-grid {
+    height: auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .big-card {
+    grid-column: auto;
+    grid-row: auto;
+    min-height: 360px;
+  }
+
+  .score-card h2 {
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .result-header {
+    height: 76px;
+    padding: 0 22px;
+  }
+
+  .result-logo {
+    width: 52px;
+    height: 52px;
+  }
+
+  .result-brand {
+    font-size: 24px;
+  }
+
+  .back-button {
+    min-width: 132px;
+    height: 52px;
+    font-size: 19px;
+  }
+
+  .results-title {
+    font-size: 40px;
+  }
+
+  .result-card {
+    border-radius: 15px;
+  }
+
+  .stats-card,
+  .score-card,
+  .takeaway-card,
+  .big-card {
+    padding: 28px;
+  }
+
+  .gauge {
+    width: 260px;
+  }
+
+.gauge-arc {
+  width: 230px;
+  height: 115px;
+}
+
+.gauge-arc::before {
+  width: 230px;
+  height: 230px;
+}
+
+.gauge-cover {
+  left: 38px;
+  top: 38px;
+
+  width: 154px;
+  height: 154px;
+}
+
+  .score-number {
+    top: 72px;
+    font-size: 52px;
+  }
+}

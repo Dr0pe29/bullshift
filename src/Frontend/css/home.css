@@ -428,7 +428,7 @@ body {
 }
 
 .truthmeter-wrapper {
-  position: fixed;
+  position: absolute;
   left: 240px;
   bottom: 0px;
   z-index: 10;
@@ -594,25 +594,6 @@ body {
 
 .fact-text {
   font-weight: 700;
-}
-
-.fact-justification {
-  margin-top: 8px;
-  font-size: 15px;
-  line-height: 1.4;
-  color: rgba(0, 0, 0, 0.78);
-}
-
-.fact-sources {
-  margin-top: 12px;
-  padding-left: 18px;
-  font-size: 14px;
-  line-height: 1.35;
-  color: rgba(0, 0, 0, 0.74);
-}
-
-.fact-sources li + li {
-  margin-top: 6px;
 }
 
 /* Responsive */

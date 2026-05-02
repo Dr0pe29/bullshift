@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at 72% 8%, rgba(65, 137, 220, 0.26), transparent 34%),
+    radial-gradient(circle at 20% 90%, rgba(42, 116, 198, 0.16), transparent 35%),
+    linear-gradient(135deg, #061225 0%, #0e2d50 48%, #061225 100%);
+  color: white;
+  overflow: hidden;
+}
+
+.hidden {
+  display: none;
+}
+
+.result-header {
+  height: 82px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.82);
+  display: flex;
+  align-items: center;
+  padding: 0 42px;
+}
+
+.result-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.result-logo {
+  width: 62px;
+  height: 62px;
+  object-fit: contain;
+}

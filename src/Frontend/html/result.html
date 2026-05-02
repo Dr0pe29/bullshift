@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Bullshift Results</title>
+
+  <link rel="stylesheet" href="../css/result/result_base.css" />
+  <link rel="stylesheet" href="../css/result/waiting.css" />
+  <link rel="stylesheet" href="../css/result/result_layout.css" />
+  <link rel="stylesheet" href="../css/result/result_cards.css" />
+  <link rel="stylesheet" href="../css/result/result_responsive.css" />
+</head>
+
+<body>
+
+  <header class="result-header">
+    <div class="result-brand">
+      <img src="../img/logo.png" alt="Bullshift logo" class="result-logo" />
+      <span>Bullshift</span>
+    </div>
+  </header>
+
+  <!-- WAITING PAGE -->
+  <main class="waiting-screen" id="waitingScreen">
+    <div class="loader"></div>
+
+    <h1>Waiting for results</h1>
+    <p>Bullshift is analysing the detected facts...</p>
+  </main>
+
+  <!-- RESULTS PAGE -->
+  <main class="results-screen hidden" id="resultsScreen">
+
+    <button class="back-button" id="backButton">
+      <span class="back-icon">
+        <img src="../img/back.png" alt="Back" />
+      </span>
+      <span>Back</span>
+    </button>
+
+    <h1 class="results-title">Results</h1>
+
+    <section class="results-grid">
+      <!-- ALGO -->
+      <article class="result-card placeholder-card">
+      </article>
+
+      <!-- CONFIDENCE -->
+      <article class="result-card score-card">
+
+        <div class="gauge">
+          <div class="gauge-arc" id="gaugeArc">
+            <div class="gauge-cover"></div>
+          </div>
+
+          <div class="score-number">
+            <span id="confidenceScore">0</span>%
+          </div>
+
+          <p>Average Confidence Score</p>
+        </div>
+      </article>
+
+      <!-- DETECTED FACTS / INSIGHTS -->
+      <article class="result-card big-card">
+        <h2>Detected Facts</h2>
+        <div class="facts-list" id="factsList"></div>
+      </article>
+
+       <!-- SUMMARY -->
+      <article class="result-card stats-card">
+
+        <div class="stat-line">
+          <div class="stat-left">
+            <span class="dot true-dot"></span>
+            <strong>True</strong>
+          </div>
+          <strong>(<span id="trueCount">0</span>)</strong>
+        </div>
+
+        <div class="stat-line">
+          <div class="stat-left">
+            <span class="dot inconclusive-dot"></span>
+            <strong>Inconclusive</strong>
+          </div>
+          <strong>(<span id="inconclusiveCount">0</span>)</strong>
+        </div>
+
+        <div class="stat-line">
+          <div class="stat-left">
+            <span class="dot false-dot"></span>
+            <strong>Bullshift</strong>
+          </div>
+          <strong>(<span id="falseCount">0</span>)</strong>
+        </div>
+      </article>
+
+      <!-- KEY TAKEAWAY -->
+      <article class="result-card takeaway-card">
+        <h2>Resume</h2>
+        <p id="keyTakeaway"></p>
+      </article>
+
+    </section>
+
+  </main>
+  <!-- FACT DETAILS POPUP -->
+  <div class="fact-modal hidden" id="factModal">
+    <div class="fact-modal-content">
+      <button class="fact-modal-close" id="closeFactModal" type="button">×</button>
+
+      <div class="fact-modal-header">
+        <span id="modalFactLabel" class="modal-label">True</span>
+        <span id="modalFactConfidence" class="modal-confidence">0% confidence</span>
+      </div>
+
+      <h2>Fact analysis</h2>
+
+      <div class="modal-section">
+        <h3>Detected claim</h3>
+        <p id="modalFactText"></p>
+      </div>
+
+      <div class="modal-section">
+        <h3>Explanation</h3>
+        <p id="modalFactExplanation"></p>
+      </div>
+
+      <div class="modal-section">
+        <h3>Backend evidence</h3>
+        <ul id="modalFactSources"></ul>
+      </div>
+    </div>
+  </div>
+  <script src="../js/result.js"></script>
+</body>
+</html>

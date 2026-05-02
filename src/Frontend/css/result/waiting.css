@@ -1,0 +1,39 @@
+.waiting-screen {
+  height: calc(100vh - 82px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  text-align: center;
+}
+
+.waiting-screen h1 {
+  font-size: 48px;
+  font-weight: 900;
+}
+
+.waiting-screen p {
+  font-size: 18px;
+  color: rgba(220, 235, 255, 0.75);
+}
+
+.loader {
+  width: 82px;
+  height: 82px;
+  border: 8px solid rgba(255, 255, 255, 0.18);
+  border-top: 8px solid #4ca3ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 24px rgba(76, 163, 255, 0.55);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hidden {
+  display: none;
+}
