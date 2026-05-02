@@ -7,6 +7,7 @@
   <title>Bullshift</title>
 
   <link rel="stylesheet" href="../css/home.css" />
+  <link rel="stylesheet" href="../components/truthmeter/truthmeter.css" />
 </head>
 <body>
 
@@ -70,6 +71,28 @@
     </header>
 
     <main class="analysis-content">
+      <div class="truthmeter-wrapper">
+        <div id="analysisTruthMeter" class="truthmeter" data-value="0" data-show-controls="false">
+          <div class="truthmeter-speedometer">
+            <div class="truthmeter-arc"></div>
+            <div class="truthmeter-needle"></div>
+
+            <div class="truthmeter-center-dot">
+              <img src="../img/truthmeter_logo.png" alt="Bullshift logo" />
+            </div>
+          </div>
+
+          <div class="truthmeter-label"></div>
+
+          <div class="truthmeter-controls">
+            <input class="truthmeter-range" type="range" min="0" max="100" value="75" />
+
+            <div class="truthmeter-percentage">
+              <span class="truthmeter-percentage-value"></span>%
+            </div>
+          </div>
+        </div>
+      </div>
 
       <section class="transcript-panel">
         <div class="live-text-box">
@@ -108,6 +131,7 @@
     </main>
   </section>
 
+  <script src="../components/truthmeter/truthmeter.js"></script>
   <script src="../js/button_moving.js"></script>
 
 </body>
