@@ -1,4 +1,0 @@
-groq
-tavily-python
-deepgram-sdk
-python-dotenv
