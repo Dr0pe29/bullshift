@@ -6,7 +6,8 @@ from deepgram import (
     Microphone,
 )
 from check_verifiable import check_if_verifiable
-from fact_checker_unlimited import fact_check_claim
+from fact_checker_unlimited import fact_check_claim # <-- Bring back the fast checker
+from multi_agent import run_courtroom               # <-- Keep the deep courtroom
 
 def main():
     try:
@@ -19,40 +20,47 @@ def main():
             
             if len(sentence) > 0:
                 if result.is_final:
-                    print(f"\n🔍 Checking if verifiable...")
+                    print(f"\n  Checking if verifiable...")
                     
-                    # Evaluate the isolated sentence immediately
                     is_verifiable = check_if_verifiable(sentence)
                     
                     if "YES" in is_verifiable:
-                        print(f"🎯 CLAIM DETECTED: {sentence}")
-                        verdict = fact_check_claim(sentence)
-                        print(f"\n{verdict}\n")
-                        print("Listening...")
+                        print(f"\n🚨 CLAIM DETECTED: {sentence}")
+                        
+                        # ==========================================
+                        # 1. THE QUICK FIRST GUESS
+                        # ==========================================
+                        print("⚡ Fetching quick initial verdict...")
+                        quick_verdict = fact_check_claim(sentence)
+                        print(f"   > {quick_verdict}\n")
+                        
+                        # ==========================================
+                        # 2. THE DEEP MULTI-AGENT ANALYSIS
+                        # ==========================================
+                        #print("🏛️ Escalating to the Multi-Agent Courtroom for deep analysis...")
+                        #run_courtroom(sentence) 
+                        
+                        print("\nListening...")
                         
                     elif "NO_CONTEXT" in is_verifiable:
-                        print(f"🤷 NO CONTEXT: '{sentence}' (Too vague to check)")
+                        print(f"  NO CONTEXT: '{sentence}' (Too vague to check)")
                         print("Listening...")
                         
                     else:
-                        print(f"⏭️ Ignored: '{sentence}'")
+                        print(f"  Ignored: '{sentence}'")
                         print("Listening...")
                         
                 else:
-                    # Print interim results on the same line so it feels alive
-                    print(f"🗣️ {sentence}", end="\r")
+                    print(f"  {sentence}", end="\r")
 
         def on_error(self, error, **kwargs):
-            # Intercept and ignore the noisy "ConnectionClosed" error during shutdown
             if "ConnectionClosed" in str(error):
                 return
-            print(f"❌ Error: {error}")
+            print(f"  Error: {error}")
 
-        # Bind the events
         dg_connection.on(LiveTranscriptionEvents.Transcript, on_message)
         dg_connection.on(LiveTranscriptionEvents.Error, on_error)
 
-        # Back to standard configurations
         options = LiveOptions(
             model="nova-3",
             language="en",
@@ -61,7 +69,7 @@ def main():
             channels=1,
             sample_rate=16000,
             interim_results=True,
-            # Removed the 3000ms delay so it evaluates quickly!
+            endpointing=3000,
         )
 
         print("Connecting to Deepgram...")
@@ -69,15 +77,12 @@ def main():
             print("Failed to connect.")
             return
 
-        # Start the microphone (Add your specific input_device_index if needed)
-        print("🟢 Connected! Start talking (Press Ctrl+C to stop)...")
+        print("  Connected! Start talking (Press Ctrl+C to stop)...")
         microphone = Microphone(dg_connection.send)
         microphone.start()
 
-        # Keep the script running
         input("Press Enter to stop recording...\n\n")
 
-        # Cleanup
         microphone.finish()
         dg_connection.finish()
         print("Stopped recording.")
