@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from groq import Groq
-from ddgs import DDGS
+from ddgs import DDGS 
 
 # Load environment variables
 load_dotenv()
@@ -11,21 +11,22 @@ ai_client = Groq()
 def fact_check_claim(claim):
     """
     SINGLE-TIER ARCHITECTURE:
-    Scrapes the live web via DuckDuckGo and feeds the context to Groq 70B.
+    Calculates a confidence percentage based on live web context.
     """
-    print(f"\n🌍 Searching the web for: '{claim}'...")
+    print(f"\n🌍 Analyzing confidence for: '{claim}'...")
     
     try:
-        # 1. Scrape the top 3 results using the DDGS library
-        search_results = DDGS().text(claim, max_results=3)
+        # 1. Scrape the top 3 results
+        with DDGS() as ddgs:
+            search_results = [r for r in ddgs.text(claim, max_results=3)]
         
-        # 2. Extract the snippet text from the search results
+        # 2. Extract the snippet text
         web_context = "\n".join([f"- {res['body']}" for res in search_results])
         
-        # 3. Build the ruthless Judge prompt
+        # 3. Build the Probabilistic Judge prompt
         prompt = f"""
-        You are a ruthless fact-checking AI. 
-        Determine if the spoken CLAIM is TRUE, FALSE, MIXED, or INCONCLUSIVE based ONLY on the provided WEB CONTEXT.
+        You are a high-precision fact-checking validator. 
+        Evaluate the likelihood that the CLAIM is objectively true based ONLY on the provided WEB CONTEXT.
 
         CLAIM: "{claim}"
 
@@ -33,19 +34,26 @@ def fact_check_claim(claim):
         {web_context}
 
         RULES:
-        1. Output your response in this EXACT format: 🌐 AI VERDICT: [TRUE/FALSE/MIXED] | [One short sentence explaining why].
-        2. Do not add any conversational filler. Be brutal and direct.
+        1. Assign a CONFIDENCE SCORE from 0% to 100%.
+           - 100%: Absolute factual certainty.
+           - 50%: Conflicting evidence or equal weight to true/false.
+           - 0%: Proven completely false.
+        2. Output your response in this EXACT format: 📊 CONFIDENCE: [X]% | [Brief technical justification].
+        3. Do not use conversational filler. Be objective and precise.
 
         OUTPUT:
         """
         
-        # 4. Use your massive 70B model to judge the DuckDuckGo results
+        # 4. Use the 8B model for better nuance and calibration
         response = ai_client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
             model="llama-3.1-8b-instant", 
-            temperature=0, 
+            temperature=0, # Keep temp at 0 for consistency in scoring
         )
         return response.choices[0].message.content.strip()
         
     except Exception as e:
-        return f"❌ ERROR | Web search failed: {e}"
+        return f"❌ ERROR | Analysis failed: {e}"
+
+# Example Usage:
+# print(fact_check_claim("The moon is made of green cheese"))
