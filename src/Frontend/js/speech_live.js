@@ -7,6 +7,7 @@ const analysisTruthMeter = document.getElementById("analysisTruthMeter");
 let speechSocket = null;
 let finalTranscript = "";
 let lastProcessedText = "";
+let factConfidences = [];
 
 // ===============================
 // WEBSOCKET CONTROLS
@@ -41,8 +42,15 @@ function startLiveSpeech() {
     if (data.type === "fact" || data.type === "fact_check") {
       addFact(data);
 
-      if (typeof data.confidence === "number" && window.updateTruthMeter && analysisTruthMeter) {
-        window.updateTruthMeter(analysisTruthMeter, data.confidence);
+      if (typeof data.confidence === "number") {
+        factConfidences.push(data.confidence);
+
+        const averageConfidence =
+          factConfidences.reduce((sum, value) => sum + value, 0) / factConfidences.length;
+
+        if (window.updateTruthMeter && analysisTruthMeter) {
+          window.updateTruthMeter(analysisTruthMeter, Math.round(averageConfidence));
+        }
       }
     }
 
@@ -148,6 +156,7 @@ function addFact(data) {
 function clearLiveSpeech() {
   finalTranscript = "";
   lastProcessedText = "";
+  factConfidences = [];
 
   if (liveText) {
     liveText.textContent = "";
@@ -160,9 +169,23 @@ function clearLiveSpeech() {
   if (factsPanel) {
     factsPanel.innerHTML = "";
   }
+
+  if (window.updateTruthMeter && analysisTruthMeter) {
+    window.updateTruthMeter(analysisTruthMeter, 0);
+  }
 }
 
-// Isto permite que o button_moving.js consiga chamar startLiveSpeech()
+// ===============================
+// PUBLIC API
+// ===============================
+// These functions are exposed globally so other scripts can
+// start/stop recording, clear the UI, or get the final transcript.
 window.startLiveSpeech = startLiveSpeech;
 window.stopLiveSpeech = stopLiveSpeech;
 window.clearLiveSpeech = clearLiveSpeech;
+
+window.getLiveSpeechData = function () {
+  return {
+    transcript: finalTranscript.trim(),
+  };
+};
