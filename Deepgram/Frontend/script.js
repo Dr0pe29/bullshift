@@ -20,7 +20,6 @@ const languageSelect = document.getElementById("languageSelect");
 
 let socket = null;
 let finalTranscript = "";
-let lastProcessedText = "";
 
 // ===============================
 // EVENT LISTENERS
@@ -57,8 +56,10 @@ function startListening() {
 
       finalTextElement.innerText = finalTranscript;
       interimTextElement.innerText = "";
+    }
 
-      detectSentences(finalTranscript);
+    if (data.type === "fact_check") {
+      handleFactCheck(data);
     }
 
     if (data.type === "error") {
@@ -87,7 +88,6 @@ function stopListening() {
 
 function clearTranscript() {
   finalTranscript = "";
-  lastProcessedText = "";
 
   finalTextElement.innerText = "";
   interimTextElement.innerText = "";
@@ -97,54 +97,31 @@ function clearTranscript() {
 }
 
 // ===============================
-// SENTENCE DETECTION
+// FACT CHECK RESULTS
 // ===============================
 
-function detectSentences(text) {
-  const newText = text.slice(lastProcessedText.length);
-
-  const sentenceRegex = /[^.!?]+[.!?]+/g;
-  const sentences = newText.match(sentenceRegex);
-
-  if (!sentences) return;
-
-  sentences.forEach((sentence) => {
-    const cleanSentence = sentence.trim();
-
-    if (cleanSentence.length > 0) {
-      addSentence(cleanSentence);
-    }
-  });
-
-  lastProcessedText = text;
-}
-
-function addSentence(sentence) {
-  const li = document.createElement("li");
-  li.innerText = sentence;
-  sentencesList.appendChild(li);
-
-  // Next step:
-  // sendToBackend(sentence);
-}
-
-// ===============================
-// BACKEND COMMUNICATION FOR CLAIMS
-// ===============================
-
-async function sendToBackend(sentence) {
-  try {
-    const response = await fetch("http://localhost:8000/claim", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ text: sentence }),
-    });
-
-    const data = await response.json();
-    console.log("Claim response:", data);
-  } catch (error) {
-    console.error("Error sending sentence to backend:", error);
+function handleFactCheck(data) {
+  if (data.status === "claim_detected") {
+    addFactCheckResult(data.text, data.verdict);
   }
+
+  if (data.status === "no_context") {
+    console.log("No context:", data.text);
+  }
+
+  if (data.status === "ignored") {
+    console.log("Ignored:", data.text);
+  }
+}
+
+function addFactCheckResult(sentence, verdict) {
+  const li = document.createElement("li");
+
+  li.innerHTML = `
+    <strong>${sentence}</strong>
+    <br>
+    <span>${verdict}</span>
+  `;
+
+  sentencesList.appendChild(li);
 }
