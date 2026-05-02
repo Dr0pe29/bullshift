@@ -5,21 +5,77 @@ from deepgram import (
     Microphone,
 )
 
+from groq import Groq
+
+ai_client = Groq()
+
+def check_if_verifiable(sentence):
+    """
+    Evaluates a sentence and returns 'YES' if it contains a verifiable claim, 
+    or 'NO' if it is just an opinion or casual talk.
+    """
+    prompt = f"""
+    You are a binary classification engine for a real-time fact-checking application. 
+    Your only job is to determine if a spoken sentence contains a VERIFIABLE factual claim.
+
+    DEFINITION: 
+    A verifiable claim is any statement that can be objectively proven TRUE or FALSE by checking reality, history, science, or public records. 
+
+    RULES:
+    1. If the sentence contains a verifiable claim (even a false one), output EXACTLY the word: YES
+    2. If the sentence is subjective (opinions, feelings), a prediction, a greeting, or casual filler, output EXACTLY the word: NO
+    3. Do NOT extract the claim. Do NOT correct the text. Do NOT explain your reasoning. Output ONLY "YES" or "NO".
+
+    EXAMPLES:
+    Sentence: "I think tacos are the best food." -> NO
+    Sentence: "The Earth is actually flat and sits on a dome." -> YES
+    Sentence: "Abraham Lincoln invented the internet." -> YES
+    Sentence: "In my opinion, Paris is a very beautiful city." -> NO
+    Sentence: "Paris is the capital of Spain." -> YES
+
+    SENTENCE: "{sentence}"
+    OUTPUT:
+    """
+    
+    try:
+        # THE UPGRADE: 70 Billion parameters of pure logic
+        response = ai_client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model="llama-3.3-70b-versatile", 
+            temperature=0, 
+        )
+        return response.choices[0].message.content.strip().upper()
+    except Exception as e:
+        print(f"Groq Error: {e}")
+        return "NO"
+    
+
 def main():
     try:
-        client = DeepgramClient("APIKEYHERE")
+        client = DeepgramClient("25bc47fefb8146ab1b4a7b423d4e52112ae37e58")
         dg_connection = client.listen.websocket.v("1")
 
         # Define what happens when text comes back
         def on_message(self, result, **kwargs):
             sentence = result.channel.alternatives[0].transcript
             if len(sentence) > 0:
-                # If it's the final sentence, print it in Green
                 if result.is_final:
-                    print(f"✅ FINAL: {sentence}")
-                # If it's still guessing the words, print it with an hourglass
+                    print(f"\n They said: {sentence}")
+                    print("🔍 Checking if verifiable...")
+                    
+                    # Call our newly upgraded Groq function
+                    is_verifiable = check_if_verifiable(sentence)
+                    
+                    if "YES" in is_verifiable:
+                        # We use the ORIGINAL sentence going forward!
+                        print(f"🎯 CLAIM DETECTED: {sentence}")
+                        # (Next step: The Fact Check Search!)
+                    else:
+                        print("⏭️ Ignored (Opinion/Casual)")
+
                 else:
-                    print(f"⏳ Interim: {sentence}")
+                    # Print interim results on the same line so it looks cool
+                    print(f"⏳ {sentence}", end="\r")
 
         def on_error(self, error, **kwargs):
             print(f"❌ Error: {error}")
@@ -37,6 +93,7 @@ def main():
             channels=1,             # Match the local test
             sample_rate=16000,      # Match the local test
             interim_results=True,   # STREAM THE WORDS INSTANTLY
+            endpointing=500,
         )
 
         print("Connecting to Deepgram...")
