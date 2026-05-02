@@ -38,7 +38,7 @@ function startLiveSpeech() {
     }
 
     if (data.type === "fact") {//REVER
-      addFact(data.text, data.label);
+      addFact(data.text, data.confidence);
     }
 
     if (data.type === "error") {
@@ -61,10 +61,7 @@ function startLiveSpeech() {
 
   speechSocket.onclose = () => {
     console.log("Speech socket closed");
-
-    if (analysisBrandName) {
-      analysisBrandName.textContent = "Stopped"; //SEE
-    }
+    //window.location.href = "result.html";
   };
 }
 
@@ -89,16 +86,21 @@ function addFinalText(text) {
 }
 
 // AINDA EM TESTE
-function addFact(text, label) {
+function addFact(text, confidence) {
   if (!factsPanel) return;
   const factCard = document.createElement("article");
   factCard.classList.add("fact-card");
 
-  const normalizedLabel = label.toLowerCase();
-  factCard.classList.add(normalizedLabel);
-  
+  if (confidence < 40) {
+    factCard.classList.add("false");
+  } else if (confidence < 65) {
+    factCard.classList.add("inconclusive");
+  } else {
+    factCard.classList.add("true");
+  }
+
   factCard.innerHTML = `
-    <div class="fact-label">${label}</div>
+    <div class="percentage">${confidence}%</div>
     <p>${text}</p>
   `;
 

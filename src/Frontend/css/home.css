@@ -287,9 +287,9 @@ body {
 }
 
 .truthmeter-wrapper {
-  position: absolute;
+  position: fixed;
   left: 240px;
-  bottom: 25px;
+  bottom: 0px;
   z-index: 10;
 }
 
@@ -368,14 +368,14 @@ body {
   background: linear-gradient(100deg, #f5f5f5 0%, #d7ceb8 48%, #e9a900 100%);
 }
 
-.fact-label {
+.percentage {
   position: absolute;
   top: -34px;
   left: 0;
 
-  min-width: 110px;
+  min-width: 76px;
   height: 40px;
-  padding: 4px 14px;
+  padding: 4px 12px;
 
   display: flex;
   align-items: center;
@@ -385,7 +385,7 @@ body {
   border-radius: 7px 7px 0 0;
 
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
   font-style: italic;
   color: #000;
