@@ -391,6 +391,19 @@ body {
   color: #000;
 }
 
+.fact-label {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .fact-card.true .fact-label {
   background: linear-gradient(135deg, #ffffff 0%, #dcefdc 100%);
 }
@@ -406,6 +419,29 @@ body {
 .fact-card p {
   font-size: 18px;
   line-height: 1.45;
+}
+
+.fact-text {
+  font-weight: 700;
+}
+
+.fact-justification {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: rgba(0, 0, 0, 0.78);
+}
+
+.fact-sources {
+  margin-top: 12px;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.35;
+  color: rgba(0, 0, 0, 0.74);
+}
+
+.fact-sources li + li {
+  margin-top: 6px;
 }
 
 /* Responsive */

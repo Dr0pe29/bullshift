@@ -77,39 +77,29 @@ def fact_check_and_broadcast(sentence):
         if "YES" in is_verifiable:
             print(f"🎯 CLAIM DETECTED: {sentence}")
 
-            verdict = fact_check_claim(sentence)
+            analysis = fact_check_claim(sentence)
 
-            print(f"\n{verdict}\n")
+            print(f"\n{analysis['raw_response']}\n")
             print("Listening...")
 
             broadcast_from_thread({
-                "type": "fact_check",
+                "type": "fact",
                 "status": "claim_detected",
                 "text": sentence,
-                "verdict": verdict,
+                "verdict": analysis["raw_response"],
+                "verifiable": True,
+                "confidence": analysis["confidence"],
+                "justification": analysis["justification"],
+                "evidence_snippets": analysis["evidence_snippets"],
             })
 
         elif "NO_CONTEXT" in is_verifiable:
             print(f"🤷 NO CONTEXT: '{sentence}'")
             print("Listening...")
 
-            broadcast_from_thread({
-                "type": "fact_check",
-                "status": "no_context",
-                "text": sentence,
-                "verdict": None,
-            })
-
         else:
             print(f"⏭️ Ignored: '{sentence}'")
             print("Listening...")
-
-            broadcast_from_thread({
-                "type": "fact_check",
-                "status": "ignored",
-                "text": sentence,
-                "verdict": None,
-            })
 
     except Exception as e:
         print(f"❌ Fact-check error: {e}")

@@ -2,6 +2,7 @@ const liveText = document.getElementById("liveText");
 const interimText = document.getElementById("interimText");
 const factsPanel = document.getElementById("factsPanel");
 const analysisBrandName = document.querySelector(".analysis-brand-name");
+const analysisTruthMeter = document.getElementById("analysisTruthMeter");
 
 let speechSocket = null;
 let finalTranscript = "";
@@ -37,8 +38,12 @@ function startLiveSpeech() {
       addFinalText(data.text);
     }
 
-    if (data.type === "fact") {//REVER
-      addFact(data.text, data.confidence);
+    if (data.type === "fact" || data.type === "fact_check") {
+      addFact(data);
+
+      if (typeof data.confidence === "number" && window.updateTruthMeter && analysisTruthMeter) {
+        window.updateTruthMeter(analysisTruthMeter, data.confidence);
+      }
     }
 
     if (data.type === "error") {
@@ -85,23 +90,56 @@ function addFinalText(text) {
   interimText.textContent = "";
 }
 
-// AINDA EM TESTE
-function addFact(text, confidence) {
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function getFactCardClass(data, confidence) {
+  if (data.status === "no_context" || data.status === "ignored" || confidence === null) {
+    return "inconclusive";
+  }
+
+  if (confidence < 40) {
+    return "false";
+  }
+
+  if (confidence < 65) {
+    return "inconclusive";
+  }
+
+  return "true";
+}
+
+function getFactLabel(data, confidence) {
+  if (data.status === "no_context") return "Needs Context";
+  if (data.status === "ignored") return "Non-Claim";
+  if (confidence === null) return "Unscored Claim";
+  if (confidence < 40) return "Low Confidence";
+  if (confidence < 65) return "Mixed Evidence";
+  return "Verifiable Claim";
+}
+
+function addFact(data) {
   if (!factsPanel) return;
+
+  const confidence = typeof data.confidence === "number" ? Math.round(data.confidence) : null;
+  const factClass = getFactCardClass(data, confidence);
+  const statusLabel = getFactLabel(data, confidence);
+
   const factCard = document.createElement("article");
   factCard.classList.add("fact-card");
 
-  if (confidence < 40) {
-    factCard.classList.add("false");
-  } else if (confidence < 65) {
-    factCard.classList.add("inconclusive");
-  } else {
-    factCard.classList.add("true");
-  }
+  factCard.classList.add(factClass);
 
   factCard.innerHTML = `
-    <div class="percentage">${confidence}%</div>
-    <p>${text}</p>
+    <div class="percentage">${confidence === null ? "—" : `${confidence}%`}</div>
+    <div class="fact-label">${escapeHtml(statusLabel)}</div>
+    <p class="fact-text">${escapeHtml(data.text)}</p>
   `;
 
   factsPanel.appendChild(factCard);

@@ -63,3 +63,5 @@ function initTruthMeters() {
 }
 
 document.addEventListener("DOMContentLoaded", initTruthMeters);
+
+window.updateTruthMeter = updateTruthMeter;
