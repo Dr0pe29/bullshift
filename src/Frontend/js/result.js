@@ -14,63 +14,56 @@ const gaugeArc = document.getElementById("gaugeArc");
 let resultsSocket = null;
 
 // ===============================
-// WAITING FOR RESULTS
+// LOAD RESULTS FROM BACKEND
 // ===============================
-(() => {
-  const showResultsButton = document.getElementById("showResultsButton");
 
-  if (!showResultsButton) {
+document.addEventListener("DOMContentLoaded", async () => {
+  const storedTranscript = sessionStorage.getItem("bullshiftTranscript");
+
+  if (!storedTranscript) {
+    showResultError("No transcript found.");
     return;
   }
 
-  showResultsButton.addEventListener("click", async () => {
-    if (window.stopLiveSpeech) {
-      window.stopLiveSpeech();
+  const parsedData = JSON.parse(storedTranscript);
+  const transcript = parsedData.transcript;
+
+  if (!transcript) {
+    showResultError("Transcript is empty.");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:8000/transcript/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        transcript: transcript
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("Backend analysis failed");
     }
 
-    const speechData = window.getLiveSpeechData
-      ? window.getLiveSpeechData()
-      : { transcript: "" };
+    const analysis = await response.json();
 
-    const transcript = speechData.transcript;
+    sessionStorage.setItem(
+      "bullshiftResults",
+      JSON.stringify({
+        transcript: transcript,
+        analysis: analysis
+      })
+    );
 
-    if (!transcript) {
-      alert("No transcript available yet.");
-      return;
-    }
-
-    try {
-      showResultsButton.disabled = true;
-      showResultsButton.textContent = "Analyzing...";
-
-      const response = await fetch("http://localhost:8000/transcript/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          transcript: transcript,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Backend analysis failed");
-      }
-
-      const analysis = await response.json();
-      window.location.href = "result.html";
-      showResults(analysis)
-      
-    } catch (error) {
-      console.error(error);
-
-      alert("Could not analyze transcript.");
-
-      showResultsButton.disabled = false;
-      showResultsButton.textContent = "Stop & show results";
-    }
-  });
-})();
+    showResults(analysis);
+  } catch (error) {
+    console.error(error);
+    showResultError("Could not analyze transcript.");
+  }
+});
 
 /**
  setTimeout(() => {
