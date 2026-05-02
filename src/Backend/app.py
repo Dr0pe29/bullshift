@@ -7,8 +7,10 @@ import time
 from dotenv import load_dotenv
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from check_verifiable import check_if_verifiable
+from fact_checker import analyze_transcript
 from fact_checker_unlimited import fact_check_claim
 
 from deepgram import (
@@ -42,6 +44,10 @@ connected_clients = set()
 main_event_loop = None
 deepgram_thread_started = False
 deepgram_stop_event = None
+
+
+class TranscriptRequest(BaseModel):
+    transcript: str
 
 
 # ===============================
@@ -211,6 +217,11 @@ def health_check():
     return {
         "status": "backend running",
     }
+
+
+@app.post("/transcript/analyze")
+def analyze_full_transcript(payload: TranscriptRequest):
+    return analyze_transcript(payload.transcript)
 
 
 @app.websocket("/ws/transcript")

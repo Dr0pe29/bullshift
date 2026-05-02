@@ -21,6 +21,26 @@ def _parse_confidence_response(response_text):
 
     return confidence, justification
 
+
+def _extract_sources(search_results):
+    sources = []
+
+    for result in search_results:
+        title = (result.get("title") or "").strip()
+        href = (result.get("href") or result.get("url") or "").strip()
+        body = (result.get("body") or "").strip()
+
+        if title and href:
+            sources.append(f"{title} - {href}")
+        elif href:
+            sources.append(href)
+        elif title:
+            sources.append(title)
+        elif body:
+            sources.append(body)
+
+    return sources
+
 def fact_check_claim(claim):
     """
     SINGLE-TIER ARCHITECTURE:
@@ -35,6 +55,7 @@ def fact_check_claim(claim):
         
         # 2. Extract the snippet text
         evidence_snippets = [res.get("body", "") for res in search_results if res.get("body")]
+        sources = _extract_sources(search_results)
         web_context = "\n".join([f"- {snippet}" for snippet in evidence_snippets])
         
         # 3. Build the Probabilistic Judge prompt
@@ -72,6 +93,7 @@ def fact_check_claim(claim):
             "justification": justification,
             "raw_response": response_text,
             "evidence_snippets": evidence_snippets,
+            "sources": sources,
         }
         
     except Exception as e:
@@ -80,6 +102,7 @@ def fact_check_claim(claim):
             "justification": f"Analysis failed: {e}",
             "raw_response": f"❌ ERROR | Analysis failed: {e}",
             "evidence_snippets": [],
+            "sources": [],
         }
 
 # Example Usage:
