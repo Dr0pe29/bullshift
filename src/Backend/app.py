@@ -41,6 +41,7 @@ app.add_middleware(
 connected_clients = set()
 main_event_loop = None
 deepgram_thread_started = False
+deepgram_stop_event = None
 
 
 # ===============================
@@ -112,7 +113,10 @@ def fact_check_and_broadcast(sentence):
 # ===============================
 # DEEPGRAM MICROPHONE LOGIC
 # ===============================
-def start_deepgram_microphone():
+def start_deepgram_microphone(stop_event):
+    microphone = None
+    dg_connection = None
+
     try:
         if not DEEPGRAM_API_KEY:
             print("Error: Missing DEEPGRAM_API_KEY in .env")
@@ -180,11 +184,22 @@ def start_deepgram_microphone():
         microphone = Microphone(dg_connection.send, input_device_index=MIC_INDEX)
         microphone.start()
 
-        while True:
+        while not stop_event.is_set():
             time.sleep(1)
 
     except Exception as e:
         print(f"Could not open socket: {e}")
+
+    finally:
+        print("🛑 Stopping Deepgram microphone...")
+
+        if microphone:
+            microphone.finish()
+
+        if dg_connection:
+            dg_connection.finish()
+
+        print("Stopped recording.")
 
 
 # ===============================
@@ -202,6 +217,7 @@ def health_check():
 async def transcript_websocket(websocket: WebSocket):
     global main_event_loop
     global deepgram_thread_started
+    global deepgram_stop_event
 
     await websocket.accept()
     connected_clients.add(websocket)
@@ -210,9 +226,11 @@ async def transcript_websocket(websocket: WebSocket):
 
     if not deepgram_thread_started:
         deepgram_thread_started = True
+        deepgram_stop_event = threading.Event()
 
         thread = threading.Thread(
             target=start_deepgram_microphone,
+            args=(deepgram_stop_event,),
             daemon=True,
         )
         thread.start()
@@ -223,3 +241,12 @@ async def transcript_websocket(websocket: WebSocket):
 
     except WebSocketDisconnect:
         connected_clients.discard(websocket)
+
+        if len(connected_clients) == 0:
+            if deepgram_stop_event:
+                deepgram_stop_event.set()
+
+            deepgram_thread_started = False
+            deepgram_stop_event = None
+
+            print("No clients connected. Requested Deepgram stop.")

@@ -1,3 +1,7 @@
 fastapi
 uvicorn
 python-dotenv
+deepgram-sdk==4.8.1
+groq
+tavily-python
+ddgs

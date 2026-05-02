@@ -33,7 +33,7 @@
         <h1>
           Spot the truth <br />
           <span class="blue-text">in a world full of</span><br />
-          <span class="bullshift-glitch">Bullshift</span>
+          <span class="bullshift-glitch power-glitch-text">Bullshift</span>
         </h1>
 
         <p>
@@ -68,6 +68,10 @@
         <div class="logo-placeholder"></div>
         <span class="analysis-brand-name">Recording...</span>
       </div>
+
+      <button class="cancel-recording-btn" id="cancelRecordingButton">
+        Cancel recording
+      </button>
     </header>
 
     <main class="analysis-content">
@@ -110,6 +114,12 @@
   <script src="../js/speech_live.js"></script>
   <script src="../components/truthmeter/truthmeter.js"></script>
   <script src="../js/button_moving.js"></script>
+  <script src="../js/cancel_recording.js"></script>
+  <script src="https://unpkg.com/powerglitch@latest/dist/powerglitch.min.js"></script>
 
+  <script>
+    PowerGlitch.glitch(".power-glitch-text");
+  </script>
+  
 </body>
 </html>
