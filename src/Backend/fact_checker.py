@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from groq import Groq
 from tavily import TavilyClient
 
-from check_verifiable import check_if_verifiable
+from check_verifiable import analyze_verifiability
 from fact_checker_unlimited import fact_check_claim
 
 # Load environment variables
@@ -43,7 +43,7 @@ def _generate_transcript_summary(results, original_transcript):
     
     # Build context from the results
     results_summary = "\n".join([
-        f"- Claim: \"{r['text']}\"\n  Confidence: {r['confidence']}% | {r['explanation']}"
+        f"- Original: \"{r['text']}\"\n  Cleaned claim: \"{r.get('cleaned_text', r['text'])}\"\n  Confidence: {r['confidence']}% | {r['explanation']}"
         for r in results
     ])
     
@@ -79,25 +79,29 @@ def _generate_transcript_summary(results, original_transcript):
 
 def analyze_transcript(transcript):
     """
-    Re-checks a full transcript and returns a list of verifiable facts
+    Re-checks a full transcript and returns a list of fact-checked statements
     with a final overall summary/review of the entire transcript.
     """
     items = []
 
     for statement in _split_transcript_into_statements(transcript):
-        verifiable_flag = check_if_verifiable(statement)
+        verifiable = analyze_verifiability(statement)
 
-        if "YES" in verifiable_flag:
-            analysis = fact_check_claim(statement)
-            confidence = analysis.get("confidence")
+        if verifiable["label"] != "YES":
+            continue
 
-            items.append({
-                "type": "results",
-                "text": statement,
-                "confidence": int(round(confidence)) if isinstance(confidence, (int, float)) else None,
-                "explanation": analysis.get("justification", ""),
-                "sources": analysis.get("sources", []),
-            })
+        claim_to_check = verifiable.get("cleaned_claim") or statement
+        analysis = fact_check_claim(claim_to_check)
+        confidence = analysis.get("confidence")
+
+        items.append({
+            "type": "results",
+            "text": statement,
+            "cleaned_text": claim_to_check,
+            "confidence": int(round(confidence)) if isinstance(confidence, (int, float)) else None,
+            "explanation": analysis.get("justification", ""),
+            "sources": analysis.get("sources", []),
+        })
 
     # Generate overall summary
     summary_text = _generate_transcript_summary(items, transcript)

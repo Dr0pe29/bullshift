@@ -1,0 +1,82 @@
+[
+  {
+    "text": "It's common sense that the Earth is flat.",
+    "label": "YES"
+  },
+  {
+    "text": "I think Paris is the capital of France.",
+    "label": "YES"
+  },
+  {
+    "text": "Water boils at 100 degrees Celsius at sea level.",
+    "label": "YES"
+  },
+  {
+    "text": "Portugal won the UEFA Euro 2016 tournament.",
+    "label": "YES"
+  },
+  {
+    "text": "He invented the internet.",
+    "label": "NO_CONTEXT"
+  },
+  {
+    "text": "They are the reigning champions.",
+    "label": "NO_CONTEXT"
+  },
+  {
+    "text": "France won.",
+    "label": "NO_CONTEXT"
+  },
+  {
+    "text": "I think tacos are the best food.",
+    "label": "NO"
+  },
+  {
+    "text": "It will probably rain tomorrow.",
+    "label": "NO"
+  },
+  {
+    "text": "Hello everyone.",
+    "label": "NO"
+  },
+  {
+    "text": "The inflation rate dropped by two percent last month.",
+    "label": "YES"
+  },
+  {
+    "text": "Everyone knows that the moon landing was fake.",
+    "label": "YES"
+  },
+  {
+    "text": "This is amazing.",
+    "label": "NO_CONTEXT"
+  },
+  {
+    "text": "The sky is blue.",
+    "label": "YES"
+  },
+  {
+    "text": "Do you know who won?",
+    "label": "NO_CONTEXT"
+  },
+  {
+    "text": "She said it was true.",
+    "label": "NO_CONTEXT"
+  },
+  {
+    "text": "In my opinion, climate change is the biggest issue.",
+    "label": "YES"
+  },
+  {
+    "text": "Please sit down.",
+    "label": "NO"
+  },
+  {
+    "text": "The moon is made of rock and dust.",
+    "label": "YES"
+  },
+  {
+    "text": "Okay.",
+    "label": "NO"
+  }
+]

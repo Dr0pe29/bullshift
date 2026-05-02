@@ -9,7 +9,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from check_verifiable import check_if_verifiable
+from check_verifiable import analyze_verifiability
 from fact_checker import analyze_transcript
 from fact_checker_unlimited import fact_check_claim
 
@@ -79,12 +79,13 @@ def fact_check_and_broadcast(sentence):
     try:
         print("🔍 Checking if verifiable...")
 
-        is_verifiable = check_if_verifiable(sentence)
+        verifiable = analyze_verifiability(sentence)
 
-        if "YES" in is_verifiable:
-            print(f"🎯 CLAIM DETECTED: {sentence}")
+        if verifiable["label"] == "YES":
+            claim_to_check = verifiable.get("cleaned_claim") or sentence
+            print(f"🎯 CLAIM DETECTED: {claim_to_check}")
 
-            analysis = fact_check_claim(sentence)
+            analysis = fact_check_claim(claim_to_check)
 
             print(f"\n{analysis['raw_response']}\n")
             print("Listening...")
@@ -93,6 +94,7 @@ def fact_check_and_broadcast(sentence):
                 "type": "fact",
                 "status": "claim_detected",
                 "text": sentence,
+                "cleaned_text": claim_to_check,
                 "verdict": analysis["raw_response"],
                 "verifiable": True,
                 "confidence": analysis["confidence"],
@@ -100,7 +102,7 @@ def fact_check_and_broadcast(sentence):
                 "evidence_snippets": analysis["evidence_snippets"],
             })
 
-        elif "NO_CONTEXT" in is_verifiable:
+        elif verifiable["label"] == "NO_CONTEXT":
             print(f"🤷 NO CONTEXT: '{sentence}'")
             print("Listening...")
 
