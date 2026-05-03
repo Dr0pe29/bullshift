@@ -67,6 +67,7 @@ body {
 
 /* Hero */
 .hero {
+  position: relative;
   min-height: calc(100vh - 80px);
   display: flex;
   justify-content: center;
@@ -74,7 +75,18 @@ body {
   gap: 150px;
   text-align: center;
   padding: 0 60px;
-  transform: translateY(-20px);
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("../img/background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
 }
 
 /* Left side */
@@ -374,11 +386,7 @@ body {
   z-index: 1;
   opacity: 0;
   pointer-events: none;
-
-  background:
-    radial-gradient(circle at 70% 15%, rgba(38, 99, 166, 0.22), transparent 32%),
-    radial-gradient(circle at 15% 85%, rgba(46, 109, 177, 0.15), transparent 30%),
-    rgba(5, 16, 32, 0.78);
+  background: transparent;
 }
 
 .analysis-screen.show-analysis {
@@ -626,32 +634,5 @@ body {
   .record-button img {
     width: 190px;
     height: 140px;
-  }
-
-  .analysis-content {
-    height: auto;
-    grid-template-columns: 1fr;
-    gap: 60px;
-    padding: 45px 18px;
-  }
-
-  .analysis-brand-name {
-    font-size: 30px;
-  }
-
-  .live-text-box {
-    max-width: 100%;
-  }
-
-  .live-text-box p {
-    font-size: 19px;
-  }
-
-  .facts-panel {
-    align-items: center;
-  }
-
-  .fact-card {
-    max-width: 100%;
   }
 }
