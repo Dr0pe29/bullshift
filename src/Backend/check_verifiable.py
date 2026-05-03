@@ -12,6 +12,9 @@ _LEAD_IN_PATTERNS = [
     r"^it'?s common sense that\s+",
     r"^everyone knows that\s+",
     r"^everybody knows that\s+",
+    r"^did you know that\s+",
+    r"^do you know that\s+",
+    r"^you know that\s+",
     r"^people say that\s+",
     r"^the truth is that\s+",
     r"^i (?:think|believe|guess|feel) that\s+",
@@ -20,6 +23,9 @@ _LEAD_IN_PATTERNS = [
     r"^obviously,?\s*",
     r"^honestly,?\s*",
     r"^to be honest,?\s*",
+    r"^dude,?\s*",
+    r"^bro,?\s*",
+    r"^man,?\s*",
 ]
 _NON_VERIFIABLE_PREFIXES = (
     "hi", "hello", "hey", "thanks", "thank you", "please", "ok", "okay"
@@ -32,6 +38,12 @@ _SUBJECTIVE_VALUE_PATTERNS = (
 )
 _NO_CONTEXT_PREFIXES = (
     "he ", "she ", "they ", "it ", "this ", "that ", "these ", "those "
+)
+
+
+_FACTUAL_ASSERTION_PATTERN = re.compile(
+    r"\b(\d{2,4}|has|have|had|is|are|was|were|won|wins|lost|loses|scored|score|born|died|invented|created|released|dropped|increased|decreased|rose|fell|plays|played)\b",
+    re.IGNORECASE,
 )
 
 
@@ -62,7 +74,13 @@ def _looks_like_no_claim(sentence):
     if stripped.startswith(_NON_VERIFIABLE_PREFIXES):
         return True
 
-    if sentence.strip().endswith("?") or _QUESTION_PATTERN.match(stripped):
+    has_question_mark = sentence.strip().endswith("?")
+    starts_like_question = _QUESTION_PATTERN.match(stripped)
+
+    if starts_like_question:
+        return True
+
+    if has_question_mark and not _FACTUAL_ASSERTION_PATTERN.search(stripped):
         return True
 
     for pattern in _SUBJECTIVE_VALUE_PATTERNS:

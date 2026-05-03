@@ -6,10 +6,16 @@ from groq import Groq
 from tavily import TavilyClient
 
 from check_verifiable import analyze_verifiability
-from fact_checker_unlimited import fact_check_claim
 
 # Load environment variables
 load_dotenv()
+
+# Choose fact-checker backend ("ddgs" or "tavily")
+fact_checker_backend = os.getenv("FACT_CHECKER_BACKEND", "ddgs").lower()
+if fact_checker_backend == "tavily":
+    from fact_checker_tavily import fact_check_claim
+else:
+    from fact_checker_unlimited import fact_check_claim
 
 # Initialize AI and Search Clients
 ai_client = Groq()
@@ -112,6 +118,7 @@ def analyze_transcript(transcript):
 
     return items
 
+#FALLBACK
 def hybrid_fact_check(claim):
     """
     WATERFALL ARCHITECTURE:
@@ -142,7 +149,7 @@ def hybrid_fact_check(claim):
     # ==========================================
     # TIER 2: TAVILY RAG FALLBACK
     # ==========================================
-    print(f"🤖 No human review found. Searching Tavily AI...")
+    #print(f"🤖 No human review found. Searching Tavily AI...")
     
     try:
         # Search Tavily (search_depth="basic" is incredibly fast)

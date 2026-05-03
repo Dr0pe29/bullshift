@@ -11,7 +11,13 @@ from pydantic import BaseModel
 
 from check_verifiable import analyze_verifiability
 from fact_checker import analyze_transcript
-from fact_checker_unlimited import fact_check_claim
+
+# Choose fact-checker backend ("ddgs" or "tavily")
+fact_checker_backend = os.getenv("FACT_CHECKER_BACKEND", "ddgs").lower()
+if fact_checker_backend == "tavily":
+    from fact_checker_tavily import fact_check_claim
+else:
+    from fact_checker_unlimited import fact_check_claim
 
 from deepgram import (
     DeepgramClient,

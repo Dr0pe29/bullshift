@@ -1,13 +1,15 @@
 from dotenv import load_dotenv
 from groq import Groq
-from ddgs import DDGS 
+from tavily import TavilyClient
 import re
+import os
 
 # Load environment variables
 load_dotenv()
 
 # Initialize AI Client
 ai_client = Groq()
+tavily_client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 
 
 def _parse_confidence_response(response_text):
@@ -40,35 +42,38 @@ def _parse_confidence_response(response_text):
 
 
 def _extract_sources(search_results):
+    """Extract sources from Tavily search results."""
     sources = []
 
     for result in search_results:
         title = (result.get("title") or "").strip()
-        href = (result.get("href") or result.get("url") or "").strip()
-        body = (result.get("body") or "").strip()
+        url = (result.get("url") or "").strip()
+        content = (result.get("content") or "").strip()
 
-        if title and href:
-            sources.append(f"{title} - {href}")
-        elif href:
-            sources.append(href)
+        if title and url:
+            sources.append(f"{title} - {url}")
+        elif url:
+            sources.append(url)
         elif title:
             sources.append(title)
-        elif body:
-            sources.append(body)
+        elif content:
+            sources.append(content[:100])  # First 100 chars of content
 
     return sources
 
+
 def _search_with_fallback(claim):
     """
-    Search using DDGS with fallback strategies.
+    Search using Tavily with fallback strategies.
     Returns search results with retry logic and query refinement.
     """
     try:
-        with DDGS() as ddgs:
-            # First try: exact claim
-            results = list(ddgs.text(claim, max_results=5))
-            if results and len(results) >= 2:
-                return results
+        # First try: exact claim
+        response = tavily_client.search(claim, max_results=5, include_answer=True)
+        results = response.get("results", [])
+        
+        if results and len(results) >= 2:
+            return results
     except Exception as e:
         print(f"  Search attempt 1 failed: {e}")
     
@@ -78,10 +83,11 @@ def _search_with_fallback(claim):
         simplified = " ".join(simplified.split()[:8])  # First 8 words
         
         if simplified and len(simplified) > 5:
-            with DDGS() as ddgs:
-                results = list(ddgs.text(simplified, max_results=5))
-                if results and len(results) >= 1:
-                    return results
+            response = tavily_client.search(simplified, max_results=5, include_answer=True)
+            results = response.get("results", [])
+            
+            if results and len(results) >= 1:
+                return results
     except Exception as e:
         print(f"  Search attempt 2 failed: {e}")
     
@@ -91,13 +97,13 @@ def _search_with_fallback(claim):
 
 def fact_check_claim(claim):
     """
-    IMPROVED FACT-CHECKING:
-    Uses web search with fallback, nuanced confidence scoring, and better calibration.
+    IMPROVED FACT-CHECKING with TAVILY RAG:
+    Uses Tavily search with fallback, nuanced confidence scoring, and better calibration.
     """
     print(f"\n🌍 Analyzing confidence for: '{claim}'...")
     
     try:
-        # 1. Search with fallback strategy
+        # 1. Search with fallback strategy using Tavily
         search_results = _search_with_fallback(claim)
         
         if not search_results:
@@ -109,8 +115,8 @@ def fact_check_claim(claim):
                 "sources": [],
             }
         
-        # 2. Extract evidence
-        evidence_snippets = [res.get("body", "") for res in search_results if res.get("body")]
+        # 2. Extract evidence (Tavily uses "content" field instead of "body")
+        evidence_snippets = [res.get("content", "") for res in search_results if res.get("content")]
         sources = _extract_sources(search_results)
         web_context = "\n".join([f"- {snippet}" for snippet in evidence_snippets[:5]])
         
@@ -170,6 +176,7 @@ def fact_check_claim(claim):
             "evidence_snippets": [],
             "sources": [],
         }
+
 
 # Example Usage:
 # print(fact_check_claim("The moon is made of green cheese"))
